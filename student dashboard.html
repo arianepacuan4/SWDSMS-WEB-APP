@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SWDSMS | Student Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f3e5f5;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #6a1b9a;
+      padding: 20px;
+      color: white;
+    }
+
+    .logo {
+      text-align: center;        
+      margin-bottom: 35px;
+    }
+
+    .logo span {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      display: block;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: white;
+      border-radius: 8px;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .sidebar a i {
+      width: 18px;
+      text-align: center;
+    }
+
+    .sidebar a.active,
+    .sidebar a:hover {
+      background: #f3e5f5;
+      color: #6a1b9a;
+      font-weight: 600;
+    }
+
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .header h2 {
+      margin: 0 0 20px;
+      color: #6a1b9a;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      max-width: 750px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #6a1b9a;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #6a1b9a;   
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #d1c4e9;
+    }
+
+    textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    .submit-btn {
+      margin-top: 20px;
+      width: 100%;
+      background: #6a1b9a;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+      background: #4a148c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #e1bee7;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">
+      <span>SWDSMS</span>
+    </div>
+
+    <a class="tab-link active" data-tab="submit">
+      <i class="fa-solid fa-pen-to-square"></i> Submit Report
+    </a>
+
+    <a class="tab-link" data-tab="reports">
+      <i class="fa-solid fa-folder-open"></i> My Reports
+    </a>
+
+    <a href="Login page.html">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h2>Student Dashboard</h2>
+    </div>
+
+    <div class="card section active" id="submit">
+      <h3>Submit an Incident Report</h3>
+      <p>Your can submit a report anonymously.</p>
+
+      <form id="reportForm">
+        <label for="name">Student Name</label>
+        <input type="text" id="name" name="name" placeholder="Student name (optional)" title="Student name">
+
+        <label for="grade">Grade / Section</label>
+        <input type="text" id="grade" name="grade" placeholder="e.g. 10-A" title="Grade or section" required>
+
+        <label for="type">Incident Type</label>
+        <select id="type" name="type" title="Incident type" required>
+          <option value="">-- Select Incident Type --</option>
+          <option>Bullying</option>
+          <option>Language</option>
+          <option>Digital Misuse</option>
+        </select>
+
+        <label for="description">Description</label>
+         <textarea id="description" name="description" placeholder="Describe what happened..." title="Incident description" required></textarea>
+
+        <label for="date">Date of Incident</label>
+        <input type="date" id="date" name="date" title="Date of incident" required>
+
+        <button type="submit" class="submit-btn">Submit Report</button>
+      </form>
+    </div>
+
+    <div class="card section" id="reports">
+      <h3>My Reports</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="reportsTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("reportForm");
+    const table = document.getElementById("reportsTable");
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const sections = document.querySelectorAll(".section");
+
+    let reports = [];
+
+    function renderReports() {
+      table.innerHTML = "";
+      reports.forEach(r => {
+        table.innerHTML += `
+          <tr>
+            <td>${r.date}</td>
+            <td>${r.type}</td>
+            <td>${r.description}</td>
+          </tr>`;
+      });
+    }
+
+    async function fetchReports() {
+      try {
+        const res = await fetch('/api/reports');
+        reports = await res.json();
+        renderReports();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        name: name.value,
+        grade: grade.value,
+        type: type.value,
+        description: description.value,
+        date: date.value
+      };
+
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const body = await res.json();
+      if (!res.ok) return alert(body.error || 'Failed to submit');
+
+      form.reset();
+      await fetchReports();
+      alert('Report submitted successfully!');
+    });
+
+    fetchReports();
+
+    tabLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        tabLinks.forEach(l => l.classList.remove("active"));
+        link.classList.add("active");
+
+        sections.forEach(sec => {
+          sec.classList.toggle("active", sec.id === link.dataset.tab);
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

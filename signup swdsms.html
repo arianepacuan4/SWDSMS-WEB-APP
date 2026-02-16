@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SWDSMS - Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e1bee7, #f3e5f5); /* soft purple gradient */
+    }
+
+    .signup-box {
+      background: #fff;
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      color: #6a1b9a; /* dark purple */
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 14px;
+      color: #4a148c; /* dark purple text */
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #6a1b9a; /* dark purple button */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #4a148c; /* darker purple on hover */
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    .login-link a {
+      color: #6a1b9a; /* dark purple link */
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-box">
+    <h2>SWDSMS Sign Up</h2>
+
+    <form id="signupForm">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" name="fullName" placeholder="Enter full name" required>
+
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Create username" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter email address" required>
+
+      <label for="accountType">Account Type</label>
+      <select id="accountType" name="accountType" required>
+        <option value="">Select account</option>
+        <option value="Admin">Admin</option>
+        <option value="Teacher / Guidance">Teacher / Guidance</option>
+        <option value="Parent">Parent</option>
+        <option value="Student">Student</option>
+      </select>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Create password (min 6 chars)" required>
+
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="login-link">
+      Already have an account?
+      <a href="Login page.html">Login</a>
+    </div>
+
+    <!-- placeholder where admin can view users after signup -->
+    <div id="adminUsers" style="margin-top:16px; display:none"></div>
+  </div>
+
+  <!-- SweetAlert2 (fancy popup) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const accountType = document.getElementById('accountType').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      // client-side validation (quick demo)
+      if (!fullName || !username || !email || !accountType || !password) {
+        return Swal.fire({ icon: 'warning', title: 'Missing fields', text: 'Please fill all required fields.' });
+      }
+      if (!validateEmail(email)) return Swal.fire({ icon: 'error', title: 'Invalid email' });
+      if (password.length < 6) return Swal.fire({ icon: 'error', title: 'Password too short', text: 'Use at least 6 characters.' });
+      if (password !== confirmPassword) return Swal.fire({ icon: 'error', title: 'Passwords do not match' });
+
+      // send signup request to backend (with robust error handling)
+      let res, body;
+      try {
+        res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fullName, username, email, accountType, password })
+        });
+      } catch (networkErr) {
+        return Swal.fire({ icon: 'error', title: 'Network error', text: 'Could not reach the server.' });
+      }
+
+      try {
+        body = await res.json();
+      } catch (parseErr) {
+        console.warn('Failed to parse JSON response from /api/signup:', parseErr);
+        body = {};
+      }
+
+      if (!res.ok) {
+        return Swal.fire({ icon: 'error', title: 'Signup failed', text: body.error || res.statusText || 'Server error' });
+      }
+
+      // Success: show SweetAlert2 popup then redirect to login
+      const popupHtmlParts = [`<strong>${body.user.username}</strong>`, `<small>${body.user.accountType}</small>`];
+
+      // If the new account is Admin, fetch and show all users (admin-only view)
+      if (accountType === 'Admin') {
+        try {
+          const usersRes = await fetch('/api/users');
+          if (usersRes.ok) {
+            const users = await usersRes.json();
+            const list = users.map(u => `<li>${u.username} — ${u.account_type || u.accountType || u.account_type || ''} — ${u.email || ''}</li>`).join('');
+            popupHtmlParts.push(`<hr/><div style="text-align:left"><strong>Registered users:</strong><ul style='margin:6px 0; padding-left:18px;'>${list}</ul></div>`);
+          }
+        } catch (err) {
+          // ignore fetch errors — not critical for signup
+          console.warn('Could not fetch users:', err);
+        }
+      }
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'You are now registered!',
+        html: popupHtmlParts.join(''),
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      // redirect to login page after popup
+      window.location.href = 'Login page.html';
+    });
+  </script>
+
+</body>
+</html>
+

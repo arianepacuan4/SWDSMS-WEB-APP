@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard - SWDSMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f6fb;
+  display: flex;
+  height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg,#4c1d95,#2e1065);
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  margin: 0;
+}
+
+.sidebar p {
+  font-size: 12px;
+  color: #ddd6fe;
+  margin-bottom: 20px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: #7c3aed;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+  height: 60px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 20px;
+  gap: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.topbar input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* ===== CONTENT ===== */
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  padding: 20px 30px;
+  overflow-y: auto;
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+/* ===== CARDS ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 28px;
+  color: #7c3aed;
+}
+
+.card p {
+  margin-top: 5px;
+  color: #475569;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+th {
+  background: #ede9fe;
+}
+
+.status-pending { color: #d97706; font-weight: bold; }
+.status-review { color: #2563eb; font-weight: bold; }
+.status-resolved { color: #059669; font-weight: bold; }
+
+button {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>SWDSMS</h2>
+  <p>Admin Panel</p>
+
+  <a class="active" onclick="showSection('dashboard', this)">📊 Overview</a>
+  <a onclick="showSection('incidents', this)">🚨 Incident Management</a>
+  <a onclick="showSection('users', this)">👥 User Management</a>
+  <a onclick="logout()">🔓 Logout</a>
+</div>
+
+<!-- MAIN -->
+<div class="content-wrapper">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <input type="text" placeholder="Search...">
+    <div>🔔</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="section active">
+      <h1>Dashboard Overview</h1>
+
+      <div class="cards">
+        <div class="card"><h3>65</h3><p>Total Incidents</p></div>
+        <div class="card"><h3>25</h3><p>Pending</p></div>
+        <div class="card"><h3>20</h3><p>Under Review</p></div>
+        <div class="card"><h3>20</h3><p>Resolved</p></div>
+        <div class="card"><h3>50</h3><p>Total Users</p></div>
+      </div>
+    </div>
+
+    <!-- INCIDENTS -->
+    <div id="incidents" class="section">
+      <h1>Incident Management</h1>
+
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Reporter</th>
+          <th>Grade</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+
+        <tr>
+          <td>2026-02-01</td>
+          <td>Anonymous</td>
+          <td>Grade 9</td>
+          <td>Bullying</td>
+          <td class="status-pending">Pending</td>
+          <td><button>View</button></td>
+        </tr>
+
+        <tr>
+          <td>2026-02-03</td>
+          <td>Maria L.</td>
+          <td>Grade 10</td>
+          <td>Language Abuse</td>
+          <td class="status-review">Under Review</td>
+          <td><button>View</button></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- USER MANAGEMENT -->
+    <div id="users" class="section">
+      <h1>User Management</h1>
+      <p>Manage all Admin, Teacher, Student, Parent, and Guidance accounts.</p>
+
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+
+        <tr>
+          <td>Ana Cruz</td>
+          <td>Teacher</td>
+          <td>Active</td>
+          <td><button>Edit</button></td>
+        </tr>
+
+        <tr>
+          <td>Mark Dela Rosa</td>
+          <td>Guidance</td>
+          <td>Inactive</td>
+          <td><button>Activate</button></td>
+        </tr>
+
+        <tr>
+          <td>Juan Santos</td>
+          <td>Student</td>
+          <td>Active</td>
+          <td><button>View</button></td>
+        </tr>
+
+        <tr>
+          <td>Maria Lopez</td>
+          <td>Student</td>
+          <td>Active</td>
+          <td><button>View</button></td>
+        </tr>
+
+        <tr>
+          <td>Mrs. Lopez</td>
+          <td>Parent</td>
+          <td>Active</td>
+          <td><button>View</button></td>
+        </tr>
+
+        <tr>
+          <td>Mr. Santos</td>
+          <td>Parent</td>
+          <td>Inactive</td>
+          <td><button>Activate</button></td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showSection(id, element) {
+  document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll(".sidebar a").forEach(link => link.classList.remove("active"));
+  element.classList.add("active");
+}
+
+function logout() {
+  window.location.href = "Login page.html";
+}
+</script>
+
+</body>
+</html>

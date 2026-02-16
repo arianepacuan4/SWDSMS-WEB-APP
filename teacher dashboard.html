@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SWDSMS | Teacher / Guidance Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  background: #f4f6fb;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg,#4c1d95,#2e1065);
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin: 0;
+}
+
+.sidebar p {
+  font-size: 12px;
+  color: #ddd6fe;
+  margin-bottom: 20px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+  background: #7c3aed;
+}
+
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  background: white;
+  height: 60px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+  gap: 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.topbar input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.topbar .icon {
+  font-size: 22px;
+  position: relative;
+  cursor: pointer;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 50%;
+}
+
+/* ===== CONTENT ===== */
+.content {
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+/* ===== CARDS ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  margin: 0;
+  color: #7c3aed;
+  font-size: 28px;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+th {
+  background: #ede9fe;
+}
+
+.status-pending { color: #d97706; font-weight: bold; }
+.status-review { color: #2563eb; font-weight: bold; }
+.status-resolved { color: #059669; font-weight: bold; }
+
+button {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>SWDSMS</h2>
+  <p id="roleText"></p>
+
+  <a class="active" onclick="showSection('overview')">📊 Overview</a>
+  <a onclick="showSection('incidents')">🚨 Incidents Management</a>
+  <a id="guidanceOnly" onclick="showSection('counseling')">🧠 Counseling</a>
+  <a id="analyticsOnly" onclick="showSection('analytics')">📈 Analytics</a>
+  <a onclick="logout()">🔓 Logout</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <input type="text" placeholder="Search incidents...">
+    <div class="icon">🔔<span class="badge">2</span></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div id="overview" class="section active">
+      <h1>Dashboard Overview</h1>
+      <div class="cards">
+        <div class="card"><h3>65</h3><p>Total Incidents</p></div>
+        <div class="card"><h3>25</h3><p>Pending</p></div>
+        <div class="card"><h3>20</h3><p>Under Review</p></div>
+        <div class="card"><h3>20</h3><p>Resolved</p></div>
+      </div>
+    </div>
+
+    <!-- INCIDENTS -->
+    <div id="Incidents" class="section">
+      <h1>Incident Management</h1>
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Student</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <td>2026-02-01</td>
+          <td>Anonymous</td>
+          <td>Bullying</td>
+          <td class="status-pending">Pending</td>
+          <td><button>View</button></td>
+        </tr>
+        <tr>
+          <td>2026-02-03</td>
+          <td>Maria L.</td>
+          <td>Cyberbullying</td>
+          <td class="status-review">Under Review</td>
+          <td><button>View</button></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- COUNSELING (GUIDANCE ONLY) -->
+    <div id="counseling" class="section">
+      <h1>Counseling Records</h1>
+      <p>Confidential counseling notes and intervention plans.</p>
+    </div>
+
+    <!-- ANALYTICS (GUIDANCE ONLY) -->
+    <div id="analytics" class="section">
+      <h1>Reports & Analytics</h1>
+      <p>Incident trends, behavioral analysis, and summaries.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* CHANGE ROLE HERE */
+const role = "teacher"; // "teacher" or "guidance"
+
+document.getElementById("roleText").innerText =
+  role === "guidance" ? "Guidance Panel" : "Teacher Panel";
+
+if (role === "teacher") {
+  document.getElementById("guidanceOnly").style.display = "none";
+  document.getElementById("analyticsOnly").style.display = "none";
+}
+
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
+  event.target.classList.add("active");
+}
+
+function logout() {
+  window.location.href = "Login page.html";
+}
+</script>
+
+</body>
+</html>

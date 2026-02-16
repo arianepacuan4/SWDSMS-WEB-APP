@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Incident Manager Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Icons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6fb;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 270px;
+      background: linear-gradient(180deg, #0f172a, #020617);
+      color: #fff;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .brand h2 {
+      margin: 0;
+    }
+
+    .brand p {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .divider {
+      height: 1px;
+      background: #1e293b;
+      margin: 20px 0;
+    }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      color: #cbd5f5;
+      transition: 0.2s;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .admin {
+      border-top: 1px solid #1e293b;
+      padding-top: 16px;
+      font-size: 13px;
+      color: #cbd5f5;
+    }
+
+    /* CONTENT */
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      cursor: pointer;
+    }
+
+    /* CARDS */
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: gray;
+    }
+
+    .status {
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .open { background: #fde68a; }
+    .review { background: #fed7aa; }
+    .resolved { background: #bbf7d0; }
+
+    .tag {
+      background: #e5e7eb;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .footer {
+      display: flex;
+      gap: 14px;
+      font-size: 13px;
+      color: gray;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <h2>Incident Manager</h2>
+        <p>School Management System</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="menu">
+        <a onclick="setActive(this)">🏠 Dashboard</a>
+        <a class="active" onclick="setActive(this)">⚠️ Incidents</a>
+        <a onclick="setActive(this)">👨‍🎓 Students</a>
+        <a onclick="setActive(this)">👤 Profile</a>
+      </div>
+    </div>
+
+    <div class="admin">
+      <strong>System Administrator</strong>
+      <span>admin@school.edu</span>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <div class="header">
+      <div>
+        <h1>Incidents</h1>
+        <p>Manage and track all reported incidents</p>
+      </div>
+      <button class="btn" onclick="newIncident()">+ New Incident</button>
+    </div>
+
+    <div class="filters">
+      <input type="text" placeholder="Search incidents..." onclick="clicked('Search')">
+      <select onclick="clicked('Status filter')">
+        <option>All Status</option>
+        <option>Open</option>
+        <option>Under Review</option>
+        <option>Resolved</option>
+      </select>
+      <select onclick="clicked('Type filter')">
+        <option>All Types</option>
+        <option>Behavioral</option>
+        <option>Academic</option>
+        <option>Attendance</option>
+      </select>
+    </div>
+
+    <!-- CARD -->
+    <div class="card" onclick="openIncident('Alex Thompson')">
+      <div class="card-header">
+        <div>
+          <h3>Alex Thompson</h3>
+          <div class="meta">Grade 10 - Section A</div>
+        </div>
+        <span class="status review">UNDER REVIEW</span>
+      </div>
+      <p>Disrupting class during math lesson.</p>
+      <div class="footer">
+        <span class="tag">Behavioral</span>
+        <span>2/5/2024</span>
+        <span>2 comments</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function setActive(element) {
+    document.querySelectorAll(".menu a").forEach(a => a.classList.remove("active"));
+    element.classList.add("active");
+    alert(element.textContent + " clicked");
+  }
+
+  function newIncident() {
+    alert("New Incident button clicked");
+  }
+
+  function openIncident(name) {
+    alert("Opening incident for " + name);
+  }
+
+  function clicked(item) {
+    console.log(item + " clicked");
+  }
+</script>
+</body>
+</html>

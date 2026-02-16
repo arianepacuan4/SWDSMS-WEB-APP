@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SWDSMS - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e1bee7, #f3e5f5); /* soft purple gradient */
+    }
+
+    .login-box {
+      background: #ffffff;
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      color: #6a1b9a; /* dark purple */
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 14px;
+      color: #4a148c; /* dark purple text */
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #6a1b9a; /* dark purple button */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #4a148c; /* darker purple on hover */
+    }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    .signup-link a {
+      color: #6a1b9a; /* dark purple link */
+      text-decoration: none;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <h2>SWDSMS Login</h2>
+
+    <form id="loginForm">
+      <label for="accountType">Account Type</label>
+      <select id="accountType" required>
+        <option value="">Select account</option>
+        <option value="Admin">Admin</option>
+        <option value="Teacher / Guidance">Teacher / Guidance</option>
+        <option value="Parent">Parent</option>
+        <option value="Student">Student</option>
+      </select>
+
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="Enter username" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter password" required>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="signup-link">
+      Don’t have an account?
+      <a href="signup swdsms.html">Sign Up</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const accountType = document.getElementById('accountType').value;
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountType, username, password })
+      });
+
+      const body = await res.json();
+      if (!res.ok) return alert(body.error || 'Login failed');
+
+      // redirect based on account type
+      const role = body.user.accountType || '';
+      if (role.includes('Admin')) window.location.href = 'Admin Dashboard.html';
+      else if (role.includes('Teacher')) window.location.href = 'teacher dashboard.html';
+      else window.location.href = 'student dashboard.html';
+    });
+  </script>
+
+</body>
+</html>
